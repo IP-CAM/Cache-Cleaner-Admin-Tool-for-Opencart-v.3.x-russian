@@ -1,0 +1,126 @@
+{{ header }}
+<style>
+  .size-info {
+    margin-left: 10px;
+    font-size: 14px;
+  }
+  .mb-10 {
+    margin-bottom: 10px;
+  }
+</style>
+{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form" class="form-horizontal">
+          <div class="form-group">
+            <div class="row">
+              <label class="col-sm-2 control-label" for="div-oc3x_storage_cleaner_status">{{ text_cache }}</label>
+              <div class="col-sm-10" id="div-oc3x_storage_cleaner_cache">
+                <button id="button-cache-system" class="btn btn-danger mb-10" data-loading-text="<i class='fa fa-spinner'></i>" data-toggle="tooltip" title="{{ text_clear }}">{{ text_cache_system }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info">{{ text_cleaner_size['cache-system'] }}</span>{% endif %}
+                <br>
+                <button id="button-cache-modification" class="btn btn-danger mb-10" data-loading-text="<i class='fa fa-spinner'></i>" data-toggle="tooltip" title="{{ text_refresh }}">{{ text_cache_modification }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info">{{ text_cleaner_size['cache-modification'] }}</span>{% endif %}
+                <br>
+                <button id="button-cache-image" class="btn btn-danger mb-10" data-loading-text="<i class='fa fa-spinner'></i>" data-toggle="tooltip" title="{{ text_clear }}">{{ text_cache_image }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info">{{ text_cleaner_size['cache-image'] }}</span>{% endif %}
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <label class="col-sm-2 control-label" for="div-oc3x_storage_cleaner_log">{{ text_log }}</label>
+              <div class="col-sm-10" id="div-oc3x_storage_cleaner_log">
+                <button id="button-log-error" class="btn btn-danger mb-10" data-loading-text="<i class='fa fa-spinner'></i>" data-toggle="tooltip" title="{{ text_clear }}">{{ text_log_error }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info">{{ text_cleaner_size['log-error'] }}</span>{% endif %}
+                <br>
+                <button id="button-log-modification" class="btn btn-danger mb-10" data-loading-text="<i class='fa fa-spinner'></i>" data-toggle="tooltip" title="{{ text_clear }}">{{ text_log_modification }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info">{{ text_cleaner_size['log-modification'] }}</span>{% endif %}
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <label class="col-sm-2 control-label" for="div-oc3x_storage_cleaner_all"></label>
+              <div class="col-sm-10" id="div-oc3x_storage_cleaner_all">
+                <button id="button-clear-all" class="btn btn-danger" data-loading-text="<i class='fa fa-spinner'></i>">{{ text_clear_all }} <i class="fa fa-eraser"></i></button>{% if text_cleaner_size %}<span class="label label-info size-info" id="all-cache-size">{{ text_cleaner_size['all'] }}</span>{% endif %}
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-oc3x_storage_cleaner_size">{{ text_change_cache_expire }}</label>
+            <div class="col-sm-10">
+
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+
+
+    function clearOption(type, key) {
+        var oc3x_size = $('#all-cache-size').html();
+        var oc3x_type = type + '-' + key;
+
+        $.ajax({
+            url: 'index.php?route=extension/module/oc3x_storage_cleaner/clear' + type + '&user_token=' + getURLVar('user_token'),
+            type: 'post',
+            data: 'key=' + key,
+            dataType: 'json',
+            beforeSend: function() {
+                $('#button-' + oc3x_type + ' span').html('<i class=\'fa fa-spinner\'></i>');
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+            },
+            success: function(json) {
+                // $('.clear-dropdown > .alert-success, .clear-dropdown > .alert-danger').remove();
+
+                if (json['success']) {
+                    $('#button-' + oc3x_type).closest('li').addClass('bg-success');
+                    $('.clear-dropdown').append('<div class="alert alert-success" style="margin: 15px 20px 15px 20px; padding: 5px; font-size: 11px;"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+
+                    if (json['size']) {
+                        $('.clear-dropdown').prev('a').children('span').html(json['size']['all']);
+                        $('#button-' + oc3x_type + ' span').html(json['size'][oc3x_type]);
+                    }
+                }
+
+                if (json['error']) {
+                    $('.clear-dropdown').prev('a').children('span').html(oc3x_size);
+                    $('#button-' + oc3x_type).closest('li').addClass('bg-danger');
+                    $('.clear-dropdown').append('<div class="alert alert-danger" style="margin: 15px 20px 15px 20px; padding: 5px; font-size: 11px;"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+                }
+            }
+        });
+    }
+
+    function clearAll() {
+        clearOption('cache', 'system');
+        clearOption('cache', 'modification');
+        clearOption('cache', 'image');
+        clearOption('log', 'error');
+        clearOption('log', 'modification');
+    }
+    //--></script>
+{{ footer }}
