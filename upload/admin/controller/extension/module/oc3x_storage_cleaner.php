@@ -11,8 +11,8 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 		$this->load->model('setting/setting');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-			$this->model_setting_setting->editSetting('oc3x_storage_cleaner', $this->request->post);
-			$this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => $this->request->post['oc3x_storage_cleaner_status']));
+			$this->model_setting_setting->editSetting('oc3x_storage_cleaner', array('oc3x_storage_cleaner_status' => '1', 'oc3x_storage_cleaner_size' => '1'));
+			$this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => '1'));
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -20,12 +20,6 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 		}
 
         $this->load->model('extension/module/oc3x_storage_cleaner');
-
-        if ($this->config->get('oc3x_storage_cleaner_size')) {
-            $data['text_cleaner_size'] = $this->model_extension_module_oc3x_storage_cleaner->getSize();
-        } else {
-            $data['text_cleaner_size'] = false;
-        }
 
 		if (isset($this->error['warning'])) {
 			$data['error_warning'] = $this->error['warning'];
@@ -53,8 +47,30 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 		$data['action'] = $this->url->link('extension/module/oc3x_storage_cleaner', 'user_token=' . $this->session->data['user_token'], true);
 		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'], true);
 
-        $data['oc3x_storage_cleaner_status'] = "1";
-        $data['oc3x_storage_cleaner_size'] = "1";
+        $data['text_cleaner_size'] = $this->model_extension_module_oc3x_storage_cleaner->getSize();
+
+        $dir = DIR_SYSTEM . 'library/cache/';
+        $files = array();
+        if($dir) {
+            // Make path into an array
+            $path = array($dir . '*');
+            while (count($path) != 0) {
+                $next = array_shift($path);
+
+                foreach (glob($next) as $file) {
+                    // If directory add to path array
+                    if (is_dir($file)) {
+                        $path[] = $file . '/*';
+                    }
+
+                    // Add the file to the files to be deleted array
+                    $files[] = basename($file, '.php');
+                }
+            }
+            $data['cache_engines'] = $files;
+        }
+
+        $data['cache_engine'] = $files ? $files[0] : 'file';
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -515,7 +531,7 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 	}
 
 	protected function validateWidget() {
-		if (!$this->user->hasPermission('access', 'extension/module/oc3x_storage_cleaner') || !$this->user->hasPermission('modify', 'extension/module/oc3x_storage_cleaner') || !$this->config->get('oc3x_storage_cleaner_status')) {
+		if (!$this->user->hasPermission('access', 'extension/module/oc3x_storage_cleaner') || !$this->user->hasPermission('modify', 'extension/module/oc3x_storage_cleaner')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
