@@ -15,12 +15,14 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
             $data['oc3x_storage_cleaner_cache_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_cache_expire_unit']);
             $data['oc3x_storage_cleaner_session_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_session_expire_unit']);
             $data['oc3x_storage_cleaner_cart_save_time'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cart_save_time_unit']);
+//            var_dump($data['oc3x_storage_cleaner_cart_save_time']);
 
 			$this->model_setting_setting->editSetting('oc3x_storage_cleaner', $data);
             $this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => $this->request->post['oc3x_storage_cleaner_status']));
 
             // TODO: REWRITE SYSTEM FILES
             // ...
+            $this->rewriteFiles($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_cache_engine']);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -576,6 +578,112 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 		// Maintance mode back to original settings
 		$this->model_setting_setting->editSettingValue('config', 'config_maintenance', $this->maintenance);
 	}
+
+	protected function rewriteFiles($cart_save_time, $cache_expire, $session_expire, $cache_engine) {
+        $this->editCartSavingTime($cart_save_time);
+        $this->editSessionExpire($session_expire);
+        $this->editCacheExpire($cache_expire);
+        $this->editCacheEngine($cache_engine);
+    }
+
+    private function editSessionExpire($seconds) {
+        $path = DIR_SYSTEM . "framework.php";
+        $file = file($path);
+//        echo "<pre>";
+        foreach ($file as $key => $line) {
+            if(stripos($line, 'setcookie($config->get(\'session_name\')')) {
+                $line_parts = explode(',', $line);
+//                if(stripos($line_parts[2], ' time() + ' . $seconds)) {
+//                    echo 'jest';
+//                }
+                $line_parts[2] = ' time() + ' . $seconds; // ini_get('session.cookie_lifetime')
+
+
+//
+                $file[$key] = implode(',', $line_parts);
+            }
+        }
+        $sh = fopen($path, 'w');
+        fwrite($sh, implode($file));
+//        print_r(implode($file));
+        fclose($sh);
+//        echo "</pre>";
+    }
+
+    private function editCacheExpire($seconds) {
+        $path = DIR_SYSTEM . "framework.php";
+        $file = file($path);
+//        echo "<pre>";
+        foreach ($file as $key => $line) {
+            if(stripos($line, 'new Cache')) {
+                $line_parts = explode(',', $line);
+                $line_parts_parts = explode(')', $line_parts[2]);
+                $line_parts_parts[0] = ' ' . $seconds; // $config->get('cache_expire')
+                $line_parts_parts[1] = '))';
+                $line_parts[2] = implode($line_parts_parts);
+//                $line_parts[2] = ' ' . $seconds . '));';
+                $file[$key] = implode(',', $line_parts);
+            }
+        }
+        $sh = fopen($path, 'w');
+        fwrite($sh, implode($file));
+//        print_r(implode($file));
+        fclose($sh);
+//        echo "</pre>";
+    }
+
+    private function editCacheEngine($engine) {
+        $path = DIR_SYSTEM . "framework.php";
+        $file = file($path);
+//        echo "<pre>";
+        foreach ($file as $key => $line) {
+            if(stripos($line, 'new Cache')) {
+                $line_parts = explode(',', $line);
+                $line_parts[1] = ' new Cache("' . $engine . '"'; // $config->get('cache_engine')
+
+                $file[$key] = implode(',', $line_parts);
+            }
+        }
+        $sh = fopen($path, 'w');
+        fwrite($sh, implode($file));
+//        print_r(implode($file));
+        fclose($sh);
+//        echo "</pre>";
+    }
+
+    private function editCartSavingTime($seconds) {
+        $path = DIR_SYSTEM . "library/cart/cart.php";
+        $file = file($path);
+
+        foreach ($file as $key => $line) {
+            if(stripos($line, '$this->db->query("DELETE FROM " . DB_PREFIX . "cart WHERE (api_id > \'0\' OR customer_id = \'0\') AND date_added < DATE_SUB(NOW(), INTERVAL')) {
+                $lines_arr = explode(' ', $line);
+                $offset = 0;
+                foreach ($lines_arr as $kkey => $line_arr) {
+                    if($line_arr == 'INTERVAL')
+                        $offset = $kkey;
+                }
+
+                if($lines_arr[$offset+1] == $seconds) {
+                    return;
+                }
+
+                $time_unit = explode(')', $lines_arr[$offset+2]);
+                if($time_unit[0] != 'SECOND') {
+                    $time_unit[0] = 'SECOND';
+                }
+                $time_unit = implode(')', $time_unit);
+                $lines_arr[$offset+2] = $time_unit;
+                $lines_arr[$offset+1] = $seconds;
+
+                $file[$key] = implode(' ', $lines_arr);
+            }
+        }
+        $sh = fopen($path, 'w');
+        fwrite($sh, implode($file));
+//        print_r(implode($txt));
+        fclose($sh);
+    }
 
 	private function convertExpireTimeToSeconds($time, $unitTime) {
 	    $seconds = 0;
