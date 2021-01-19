@@ -12,16 +12,30 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 		    $data = $this->request->post;
-            $data['oc3x_storage_cleaner_cache_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_cache_expire_unit']);
-            $data['oc3x_storage_cleaner_session_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_session_expire_unit']);
-            $data['oc3x_storage_cleaner_cart_save_time'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cart_save_time_unit']);
-//            var_dump($data['oc3x_storage_cleaner_cart_save_time']);
+
+            if(isset($data['oc3x_storage_cleaner_cache_expire']))
+                $data['oc3x_storage_cleaner_cache_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_cache_expire_unit']);
+            else
+                $data['oc3x_storage_cleaner_cache_expire'] = false;
+
+            if(isset($data['oc3x_storage_cleaner_session_expire']))
+                $data['oc3x_storage_cleaner_session_expire'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_session_expire_unit']);
+            else
+                $data['oc3x_storage_cleaner_session_expire'] = false;
+
+            if(isset($data['oc3x_storage_cleaner_cart_save_time']))
+                $data['oc3x_storage_cleaner_cart_save_time'] = $this->convertExpireTimeToSeconds($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cart_save_time_unit']);
+            else
+                $data['oc3x_storage_cleaner_cart_save_time'] = false;
+
+            if(!isset($data['oc3x_storage_cleaner_cache_engine']))
+                $data['oc3x_storage_cleaner_cache_engine'] = false;
+
 
 			$this->model_setting_setting->editSetting('oc3x_storage_cleaner', $data);
             $this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => $this->request->post['oc3x_storage_cleaner_status']));
 
-            // TODO: REWRITE SYSTEM FILES
-            // ...
+            // REWRITE SYSTEM FILES
             $this->rewriteFiles($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_cache_engine']);
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -89,12 +103,26 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
             $data['oc3x_storage_cleaner_status'] = $this->config->get('module_oc3x_storage_cleaner_status');
         }
 
+        // Cache Engine
+        if (isset($this->request->post['oc3x_storage_cleaner_cache_engine_status'])) {
+            $data['oc3x_storage_cleaner_cache_engine_status'] = $this->request->post['oc3x_storage_cleaner_cache_engine_status'];
+        } else {
+            $data['oc3x_storage_cleaner_cache_engine_status'] = $this->config->get('oc3x_storage_cleaner_cache_engine_status');
+        }
+
         if (isset($this->request->post['oc3x_storage_cleaner_cache_engine'])) {
             $data['oc3x_storage_cleaner_cache_engine'] = $this->request->post['oc3x_storage_cleaner_cache_engine'];
         } elseif ($this->config->get('oc3x_storage_cleaner_cache_engine')) {
             $data['oc3x_storage_cleaner_cache_engine'] = $this->config->get('oc3x_storage_cleaner_cache_engine');
         } else {
             $data['oc3x_storage_cleaner_cache_engine'] = $config->get('cache_engine');
+        }
+
+        // Cache Expire
+        if (isset($this->request->post['oc3x_storage_cleaner_cache_expire_status'])) {
+            $data['oc3x_storage_cleaner_cache_expire_status'] = $this->request->post['oc3x_storage_cleaner_cache_expire_status'];
+        } else {
+            $data['oc3x_storage_cleaner_cache_expire_status'] = $this->config->get('oc3x_storage_cleaner_cache_expire_status');
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cache_expire'])) {
@@ -109,6 +137,13 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
             $data['oc3x_storage_cleaner_cache_expire_unit'] = $this->config->get('oc3x_storage_cleaner_cache_expire_unit');
         }
 
+        // Session Expire
+        if (isset($this->request->post['oc3x_storage_cleaner_session_expire_status'])) {
+            $data['oc3x_storage_cleaner_session_expire_status'] = $this->request->post['oc3x_storage_cleaner_session_expire_status'];
+        } else {
+            $data['oc3x_storage_cleaner_session_expire_status'] = $this->config->get('oc3x_storage_cleaner_session_expire_status');
+        }
+
         if (isset($this->request->post['oc3x_storage_cleaner_session_expire'])) {
             $data['oc3x_storage_cleaner_session_expire'] = $this->request->post['oc3x_storage_cleaner_session_expire'];
         } else {
@@ -119,6 +154,13 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
             $data['oc3x_storage_cleaner_session_expire_unit'] = $this->request->post['oc3x_storage_cleaner_session_expire_unit'];
         } else {
             $data['oc3x_storage_cleaner_session_expire_unit'] = $this->config->get('oc3x_storage_cleaner_session_expire_unit');
+        }
+
+        // Cart Save Time
+        if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time_status'])) {
+            $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->request->post['oc3x_storage_cleaner_cart_save_time_status'];
+        } else {
+            $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->config->get('oc3x_storage_cleaner_cart_save_time_status');
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time'])) {
@@ -589,66 +631,64 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
     private function editSessionExpire($seconds) {
         $path = DIR_SYSTEM . "framework.php";
         $file = file($path);
-//        echo "<pre>";
+
         foreach ($file as $key => $line) {
             if(stripos($line, 'setcookie($config->get(\'session_name\')')) {
                 $line_parts = explode(',', $line);
-//                if(stripos($line_parts[2], ' time() + ' . $seconds)) {
-//                    echo 'jest';
-//                }
-                $line_parts[2] = ' time() + ' . $seconds; // ini_get('session.cookie_lifetime')
+                if($seconds) {
+                    $line_parts[2] = ' time() + ' . $seconds;
+                } else {
+                    $line_parts[2] = ' ini_get(\'session.cookie_lifetime\')';
+                }
 
-
-//
                 $file[$key] = implode(',', $line_parts);
             }
         }
         $sh = fopen($path, 'w');
         fwrite($sh, implode($file));
-//        print_r(implode($file));
         fclose($sh);
-//        echo "</pre>";
     }
 
     private function editCacheExpire($seconds) {
         $path = DIR_SYSTEM . "framework.php";
         $file = file($path);
-//        echo "<pre>";
+
         foreach ($file as $key => $line) {
             if(stripos($line, 'new Cache')) {
                 $line_parts = explode(',', $line);
                 $line_parts_parts = explode(')', $line_parts[2]);
-                $line_parts_parts[0] = ' ' . $seconds; // $config->get('cache_expire')
+                if($seconds)
+                    $line_parts_parts[0] = ' ' . $seconds;
+                else
+                    $line_parts_parts[0] = ' $config->get(\'cache_expire\')';
                 $line_parts_parts[1] = '))';
                 $line_parts[2] = implode($line_parts_parts);
-//                $line_parts[2] = ' ' . $seconds . '));';
                 $file[$key] = implode(',', $line_parts);
             }
         }
         $sh = fopen($path, 'w');
         fwrite($sh, implode($file));
-//        print_r(implode($file));
         fclose($sh);
-//        echo "</pre>";
     }
 
     private function editCacheEngine($engine) {
         $path = DIR_SYSTEM . "framework.php";
         $file = file($path);
-//        echo "<pre>";
+
         foreach ($file as $key => $line) {
             if(stripos($line, 'new Cache')) {
                 $line_parts = explode(',', $line);
-                $line_parts[1] = ' new Cache("' . $engine . '"'; // $config->get('cache_engine')
+                if($engine)
+                    $line_parts[1] = ' new Cache("' . $engine . '"'; // $config->get('cache_engine')
+                else
+                    $line_parts[1] = ' new Cache($config->get(\'cache_engine\')';
 
                 $file[$key] = implode(',', $line_parts);
             }
         }
         $sh = fopen($path, 'w');
         fwrite($sh, implode($file));
-//        print_r(implode($file));
         fclose($sh);
-//        echo "</pre>";
     }
 
     private function editCartSavingTime($seconds) {
@@ -664,24 +704,36 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
                         $offset = $kkey;
                 }
 
-                if($lines_arr[$offset+1] == $seconds) {
-                    return;
-                }
+                if($seconds) {
+                    if($lines_arr[$offset+1] == $seconds) {
+                        return;
+                    }
 
-                $time_unit = explode(')', $lines_arr[$offset+2]);
-                if($time_unit[0] != 'SECOND') {
-                    $time_unit[0] = 'SECOND';
+                    $time_unit = explode(')', $lines_arr[$offset+2]);
+                    if($time_unit[0] != 'SECOND') {
+                        $time_unit[0] = 'SECOND';
+                    }
+                    $time_unit = implode(')', $time_unit);
+                    $lines_arr[$offset+2] = $time_unit;
+                    $lines_arr[$offset+1] = $seconds;
+                } else {
+                    $time_unit = explode(')', $lines_arr[$offset+2]);
+
+                    if($time_unit[0] == 'HOUR') {
+                        return;
+                    }
+
+                    $time_unit[0] = 'HOUR';
+                    $time_unit = implode(')', $time_unit);
+                    $lines_arr[$offset+2] = $time_unit;
+                    $lines_arr[$offset+1] = '1';
                 }
-                $time_unit = implode(')', $time_unit);
-                $lines_arr[$offset+2] = $time_unit;
-                $lines_arr[$offset+1] = $seconds;
 
                 $file[$key] = implode(' ', $lines_arr);
             }
         }
         $sh = fopen($path, 'w');
         fwrite($sh, implode($file));
-//        print_r(implode($txt));
         fclose($sh);
     }
 
