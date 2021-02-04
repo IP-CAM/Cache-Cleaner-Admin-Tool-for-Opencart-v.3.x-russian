@@ -33,7 +33,7 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 
 
 			$this->model_setting_setting->editSetting('oc3x_storage_cleaner', $data);
-            $this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => $this->request->post['oc3x_storage_cleaner_status']));
+            $this->model_setting_setting->editSetting('module_oc3x_storage_cleaner', array('module_oc3x_storage_cleaner_status' => "1"));
 
             // REWRITE SYSTEM FILES
             $this->rewriteFiles($data['oc3x_storage_cleaner_cart_save_time'], $data['oc3x_storage_cleaner_cache_expire'], $data['oc3x_storage_cleaner_session_expire'], $data['oc3x_storage_cleaner_cache_engine']);
@@ -749,6 +749,9 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
             case 'day':
                 $seconds = $time * (60 * 60 * 24);
                 break;
+            case 'month':
+                $seconds = $time * (60 * 60 * 24 * 30);
+                break;
             default:
                 break;
         }
@@ -766,6 +769,9 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
                 break;
             case 'day':
                 $time = $seconds / (60 * 60 * 24);
+                break;
+            case 'month':
+                $time = $seconds / (60 * 60 * 24 * 30);
                 break;
             default:
                 break;

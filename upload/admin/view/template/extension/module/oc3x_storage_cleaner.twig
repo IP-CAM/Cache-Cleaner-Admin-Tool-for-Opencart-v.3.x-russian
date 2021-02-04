@@ -64,47 +64,33 @@
               </div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-oc3x_storage_cleaner_status">{{ entry_status }}</label>
-            <div class="col-sm-10">
-              <select name="oc3x_storage_cleaner_status" id="input-oc3x_storage_cleaner_status" class="form-control">
-                {% if oc3x_storage_cleaner_status %}
-                  <option value="1" selected="selected">{{ text_enabled }}</option>
-                  <option value="0">{{ text_disabled }}</option>
-                {% else %}
-                  <option value="1">{{ text_enabled }}</option>
-                  <option value="0" selected="selected">{{ text_disabled }}</option>
-                {% endif %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-oc3x_storage_cache_engine">{{ text_cache_engine }}</label>
-            <div class="col-sm-10">
-              <div class="col-sm-2">
-                <select name="oc3x_storage_cleaner_cache_engine_status" id="select-oc3x_storage_cleaner_cache_engine_status" class="form-control">
-                  {% if oc3x_storage_cleaner_cache_engine_status %}
-                    <option value="1" selected="selected">{{ text_default }}</option>
-                    <option value="0">{{ text_custom }}</option>
-                  {% else %}
-                    <option value="1">{{ text_default }}</option>
-                    <option value="0" selected="selected">{{ text_custom }}</option>
-                  {% endif %}
-                </select>
-              </div>
-              <div class="col-sm-10">
-                <select name="oc3x_storage_cleaner_cache_engine" id="input-oc3x_storage_cache_engine" class="form-control">
-                  {% if cache_engines %}
-                    {% for engine in cache_engines %}
-                      <option value="{{ engine }}" {% if engine == oc3x_storage_cleaner_cache_engine %}selected="selected"{% endif %}>{{ engine }}</option>
-                    {% endfor %}
-                  {% else %}
-                    <option value="{{ oc3x_storage_cleaner_cache_engine }}">{{ oc3x_storage_cleaner_cache_engine }}</option>
-                  {% endif %}
-                </select>
-              </div>
-            </div>
-          </div>
+{#          <div class="form-group">#}
+{#            <label class="col-sm-2 control-label" for="input-oc3x_storage_cache_engine">{{ text_cache_engine }}</label>#}
+{#            <div class="col-sm-10">#}
+{#              <div class="col-sm-2">#}
+{#                <select name="oc3x_storage_cleaner_cache_engine_status" id="select-oc3x_storage_cleaner_cache_engine_status" class="form-control">#}
+{#                  {% if oc3x_storage_cleaner_cache_engine_status %}#}
+{#                    <option value="1" selected="selected">{{ text_default }}</option>#}
+{#                    <option value="0">{{ text_custom }}</option>#}
+{#                  {% else %}#}
+{#                    <option value="1">{{ text_default }}</option>#}
+{#                    <option value="0" selected="selected">{{ text_custom }}</option>#}
+{#                  {% endif %}#}
+{#                </select>#}
+{#              </div>#}
+{#              <div class="col-sm-10">#}
+{#                <select name="oc3x_storage_cleaner_cache_engine" id="input-oc3x_storage_cache_engine" class="form-control">#}
+{#                  {% if cache_engines %}#}
+{#                    {% for engine in cache_engines %}#}
+{#                      <option value="{{ engine }}" {% if engine == oc3x_storage_cleaner_cache_engine %}selected="selected"{% endif %}>{{ engine }}</option>#}
+{#                    {% endfor %}#}
+{#                  {% else %}#}
+{#                    <option value="{{ oc3x_storage_cleaner_cache_engine }}">{{ oc3x_storage_cleaner_cache_engine }}</option>#}
+{#                  {% endif %}#}
+{#                </select>#}
+{#              </div>#}
+{#            </div>#}
+{#          </div>#}
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-oc3x_storage_cache_expire">{{ text_cache_expire }}</label>
             <div class="col-sm-10">
@@ -127,6 +113,7 @@
                     <option value="minute" {% if oc3x_storage_cleaner_cache_expire_unit == 'minute' %}selected="selected"{% endif %}>{{ text_minute }}</option>
                     <option value="hour" {% if oc3x_storage_cleaner_cache_expire_unit == 'hour' %}selected="selected"{% endif %}>{{ text_hour }}</option>
                     <option value="day" {% if oc3x_storage_cleaner_cache_expire_unit == 'day' %}selected="selected"{% endif %}>{{ text_day }}</option>
+                    <option value="month" {% if oc3x_storage_cleaner_cache_expire_unit == 'month' %}selected="selected"{% endif %}>{{ text_month }}</option>
                 </select>
               </div>
             </div>
@@ -153,6 +140,7 @@
                   <option value="minute" {% if oc3x_storage_cleaner_session_expire_unit == 'minute' %}selected="selected"{% endif %}>{{ text_minute }}</option>
                   <option value="hour" {% if oc3x_storage_cleaner_session_expire_unit == 'hour' %}selected="selected"{% endif %}>{{ text_hour }}</option>
                   <option value="day" {% if oc3x_storage_cleaner_session_expire_unit == 'day' %}selected="selected"{% endif %}>{{ text_day }}</option>
+                  <option value="month" {% if oc3x_storage_cleaner_session_expire_unit == 'month' %}selected="selected"{% endif %}>{{ text_month }}</option>
                 </select>
               </div>
             </div>
@@ -179,6 +167,7 @@
                   <option value="minute" {% if oc3x_storage_cleaner_cart_save_time_unit == 'minute' %}selected="selected"{% endif %}>{{ text_minute }}</option>
                   <option value="hour" {% if oc3x_storage_cleaner_cart_save_time_unit == 'hour' %}selected="selected"{% endif %}>{{ text_hour }}</option>
                   <option value="day" {% if oc3x_storage_cleaner_cart_save_time_unit == 'day' %}selected="selected"{% endif %}>{{ text_day }}</option>
+                  <option value="month" {% if oc3x_storage_cleaner_cart_save_time_unit == 'month' %}selected="selected"{% endif %}>{{ text_month }}</option>
                 </select>
               </div>
             </div>
