@@ -106,7 +106,7 @@
                 </select>
               </div>
               <div class="col-sm-5">
-                <input type="text" name="oc3x_storage_cleaner_cache_expire" placeholder="{{ entry_title }}" id="input-oc3x_storage_cache_expire" value="{{ oc3x_storage_cleaner_cache_expire }}" class="form-control" />
+                <input type="text" name="oc3x_storage_cleaner_cache_expire" placeholder="{{ entry_duration }}" id="input-oc3x_storage_cache_expire" value="{{ oc3x_storage_cleaner_cache_expire }}" class="form-control" />
               </div>
               <div class="col-sm-5">
                 <select name="oc3x_storage_cleaner_cache_expire_unit" id="input-oc3x_storage_cache_expire_unit" class="form-control">
@@ -133,7 +133,7 @@
                 </select>
               </div>
               <div class="col-sm-5">
-                <input type="text" name="oc3x_storage_cleaner_session_expire" placeholder="{{ entry_title }}" id="input-oc3x_storage_session_expire" value="{{ oc3x_storage_cleaner_session_expire }}" class="form-control" />
+                <input type="text" name="oc3x_storage_cleaner_session_expire" placeholder="{{ entry_duration }}" id="input-oc3x_storage_session_expire" value="{{ oc3x_storage_cleaner_session_expire }}" class="form-control" />
               </div>
               <div class="col-sm-5">
                 <select name="oc3x_storage_cleaner_session_expire_unit" id="input-oc3x_storage_session_expire_unit" class="form-control">
@@ -160,14 +160,14 @@
                 </select>
               </div>
               <div class="col-sm-5">
-                <input type="text" name="oc3x_storage_cleaner_cart_save_time" placeholder="{{ entry_title }}" id="input-oc3x_storage_cart_save_time" value="{{ oc3x_storage_cleaner_cart_save_time }}" class="form-control" />
+                <input type="text" name="oc3x_storage_cleaner_cart_save_time" placeholder="{{ entry_duration }}" id="input-oc3x_storage_cart_save_time" value="{{ oc3x_storage_cleaner_cart_save_time }}" class="form-control" />
               </div>
               <div class="col-sm-5">
                 <select name="oc3x_storage_cleaner_cart_save_time_unit" id="input-oc3x_storage_cart_save_time_unit" class="form-control">
                   <option value="minute" {% if oc3x_storage_cleaner_cart_save_time_unit == 'minute' %}selected="selected"{% endif %}>{{ text_minute }}</option>
                   <option value="hour" {% if oc3x_storage_cleaner_cart_save_time_unit == 'hour' %}selected="selected"{% endif %}>{{ text_hour }}</option>
                   <option value="day" {% if oc3x_storage_cleaner_cart_save_time_unit == 'day' %}selected="selected"{% endif %}>{{ text_day }}</option>
-                  <option value="month" {% if oc3x_storage_cleaner_cart_save_time_unit == 'month' %}selected="selected"{% endif %}>{{ text_month }}</option>
+                  <option value="mont" {% if oc3x_storage_cleaner_cart_save_time_unit == 'month' %}selected="selected"{% endif %}>{{ text_month }}</option>
                 </select>
               </div>
             </div>

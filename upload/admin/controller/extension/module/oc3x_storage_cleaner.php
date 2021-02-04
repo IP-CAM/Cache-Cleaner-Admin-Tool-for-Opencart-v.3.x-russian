@@ -121,14 +121,18 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Cache Expire
         if (isset($this->request->post['oc3x_storage_cleaner_cache_expire_status'])) {
             $data['oc3x_storage_cleaner_cache_expire_status'] = $this->request->post['oc3x_storage_cleaner_cache_expire_status'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_cache_expire_status'))) {
             $data['oc3x_storage_cleaner_cache_expire_status'] = $this->config->get('oc3x_storage_cleaner_cache_expire_status');
+        } else {
+            $data['oc3x_storage_cleaner_cache_expire_status'] = '1';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cache_expire'])) {
             $data['oc3x_storage_cleaner_cache_expire'] = $this->request->post['oc3x_storage_cleaner_cache_expire'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_cache_expire')) && !empty($this->config->get('oc3x_storage_cleaner_cache_expire_unit'))) {
             $data['oc3x_storage_cleaner_cache_expire'] = $this->convertExpireSecondsToTime($this->config->get('oc3x_storage_cleaner_cache_expire'), $this->config->get('oc3x_storage_cleaner_cache_expire_unit'));
+        } else {
+            $data['oc3x_storage_cleaner_cache_expire'] = '';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cache_expire_unit'])) {
@@ -140,14 +144,18 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Session Expire
         if (isset($this->request->post['oc3x_storage_cleaner_session_expire_status'])) {
             $data['oc3x_storage_cleaner_session_expire_status'] = $this->request->post['oc3x_storage_cleaner_session_expire_status'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_session_expire_status'))) {
             $data['oc3x_storage_cleaner_session_expire_status'] = $this->config->get('oc3x_storage_cleaner_session_expire_status');
+        } else {
+            $data['oc3x_storage_cleaner_session_expire_status'] = '1';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_session_expire'])) {
             $data['oc3x_storage_cleaner_session_expire'] = $this->request->post['oc3x_storage_cleaner_session_expire'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_session_expire')) && !empty($this->config->get('oc3x_storage_cleaner_session_expire_unit'))) {
             $data['oc3x_storage_cleaner_session_expire'] = $this->convertExpireSecondsToTime($this->config->get('oc3x_storage_cleaner_session_expire'), $this->config->get('oc3x_storage_cleaner_session_expire_unit'));
+        } else {
+            $data['oc3x_storage_cleaner_session_expire'] = '';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_session_expire_unit'])) {
@@ -159,14 +167,18 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Cart Save Time
         if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time_status'])) {
             $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->request->post['oc3x_storage_cleaner_cart_save_time_status'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_cart_save_time_status'))) {
             $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->config->get('oc3x_storage_cleaner_cart_save_time_status');
+        } else {
+            $data['oc3x_storage_cleaner_cart_save_time_status'] = '1';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time'])) {
             $data['oc3x_storage_cleaner_cart_save_time'] = $this->request->post['oc3x_storage_cleaner_cart_save_time'];
-        } else {
+        } else if(!empty($this->config->get('oc3x_storage_cleaner_cart_save_time')) && !empty($this->config->get('oc3x_storage_cleaner_cart_save_time_unit'))) {
             $data['oc3x_storage_cleaner_cart_save_time'] = $this->convertExpireSecondsToTime($this->config->get('oc3x_storage_cleaner_cart_save_time'), $this->config->get('oc3x_storage_cleaner_cart_save_time_unit'));
+        } else {
+            $data['oc3x_storage_cleaner_cart_save_time'] = '';
         }
 
         if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time_unit'])) {
