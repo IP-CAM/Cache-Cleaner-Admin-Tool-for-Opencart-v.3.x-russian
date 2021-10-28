@@ -121,7 +121,7 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Cache Expire
         if (isset($this->request->post['oc3x_storage_cleaner_cache_expire_status'])) {
             $data['oc3x_storage_cleaner_cache_expire_status'] = $this->request->post['oc3x_storage_cleaner_cache_expire_status'];
-        } else if(!empty($this->config->get('oc3x_storage_cleaner_cache_expire_status'))) {
+        } else if($this->config->get('oc3x_storage_cleaner_cache_expire_status') != '') {
             $data['oc3x_storage_cleaner_cache_expire_status'] = $this->config->get('oc3x_storage_cleaner_cache_expire_status');
         } else {
             $data['oc3x_storage_cleaner_cache_expire_status'] = '1';
@@ -144,7 +144,7 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Session Expire
         if (isset($this->request->post['oc3x_storage_cleaner_session_expire_status'])) {
             $data['oc3x_storage_cleaner_session_expire_status'] = $this->request->post['oc3x_storage_cleaner_session_expire_status'];
-        } else if(!empty($this->config->get('oc3x_storage_cleaner_session_expire_status'))) {
+        } else if($this->config->get('oc3x_storage_cleaner_session_expire_status') != '') {
             $data['oc3x_storage_cleaner_session_expire_status'] = $this->config->get('oc3x_storage_cleaner_session_expire_status');
         } else {
             $data['oc3x_storage_cleaner_session_expire_status'] = '1';
@@ -167,7 +167,7 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
         // Cart Save Time
         if (isset($this->request->post['oc3x_storage_cleaner_cart_save_time_status'])) {
             $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->request->post['oc3x_storage_cleaner_cart_save_time_status'];
-        } else if(!empty($this->config->get('oc3x_storage_cleaner_cart_save_time_status'))) {
+        } else if($this->config->get('oc3x_storage_cleaner_cart_save_time_status') != '') {
             $data['oc3x_storage_cleaner_cart_save_time_status'] = $this->config->get('oc3x_storage_cleaner_cart_save_time_status');
         } else {
             $data['oc3x_storage_cleaner_cart_save_time_status'] = '1';
@@ -635,12 +635,13 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
 
 	protected function rewriteFiles($cart_save_time, $cache_expire, $session_expire, $cache_engine) {
         $this->editCartSavingTime($cart_save_time);
-        $this->editSessionExpire($session_expire);
+        $this->editAdminSessionExpire($session_expire);
+        $this->editCustomerSessionExpire($session_expire);
         $this->editCacheExpire($cache_expire);
         $this->editCacheEngine($cache_engine);
     }
 
-    private function editSessionExpire($seconds) {
+    private function editAdminSessionExpire($seconds) {
         $path = DIR_SYSTEM . "framework.php";
         $file = file($path);
 
@@ -656,6 +657,29 @@ class ControllerExtensionModuleOc3xStorageCleaner extends Controller {
                 $file[$key] = implode(',', $line_parts);
             }
         }
+        $sh = fopen($path, 'w');
+        fwrite($sh, implode($file));
+        fclose($sh);
+    }
+
+    private function editCustomerSessionExpire($seconds) {
+        $path = DIR_SYSTEM . 'library/session/db.php';
+
+        $file = file($path);
+
+        foreach ($file as $key => $line) {
+            if(stripos($line, '$this->expire = ')) {
+                $line_parts = explode('=', $line);
+                if($seconds) {
+                    $line_parts[1] = ' ' . $seconds . ';' . PHP_EOL;
+                } else {
+                    $line_parts[1] = ' ini_get(\'session.gc_maxlifetime\');' . PHP_EOL;
+                }
+
+                $file[$key] = implode('=', $line_parts);
+            }
+        }
+
         $sh = fopen($path, 'w');
         fwrite($sh, implode($file));
         fclose($sh);
